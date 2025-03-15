@@ -1,0 +1,44 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Account {
+  id        String    @id @default(uuid())
+  email     String    @unique
+  username  String    @unique
+  password  String
+  createdAt DateTime  @default(now())
+  updateAt  DateTime  @updatedAt
+  profile   Profile?  // One-to-One relation
+  modules   Module[]  // One-to-Many relation
+}
+
+model Profile {
+  id         String    @id @default(uuid())
+  userId     String    @unique
+  lastname   String
+  middlename String?
+  firstname  String
+  suffix     String?
+  bio        String?
+  picture    String?
+  createdAt  DateTime  @default(now())
+  updateAt   DateTime  @updatedAt
+  account    Account   @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Module {
+  recID         String    @id @default(uuid())
+  accountCode   String
+  moduleCode    String
+  moduleDetails String?
+  moduleDesc    String?
+  createdAt     DateTime  @default(now())
+  updateAt      DateTime  @updatedAt
+  account       Account   @relation(fields: [accountCode], references: [id], onDelete: Cascade)
+}
